@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %level %logger - %msg%n"/>
+        </Console>
+        <RollingFile name="MyFile" fileName="logs/app.log" immediateFlush="true"
+                     filePattern="logs/$${date:yyyy-MM-dd}/app-%d{yyyy-MM-dd}-%i.log.gz">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size = "10KB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="nomax"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+        <Logger name="com.example.log4j2.controller" level="debug" >
+<!--            <AppenderRef ref="MyFile"/>-->
+        </Logger>
+    </Loggers>
+</Configuration>
