@@ -20,7 +20,7 @@
             <AppenderRef ref="Console"/>
         </Root>
         <Logger name="com.example.log4j2.controller" level="debug" >
-<!--            <AppenderRef ref="MyFile"/>-->
+            <AppenderRef ref="MyFile"/>
         </Logger>
     </Loggers>
 </Configuration>
