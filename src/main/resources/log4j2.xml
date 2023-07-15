@@ -1,36 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="debug">
+    <Properties>
+        <Property name="Console">Console_${sys:log4jLayOut:-test}</Property>
+    </Properties>
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
+        <Console name="Console_prod" target="SYSTEM_OUT">
             <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json"/>
-<!--            <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} [%t] %level %logger - %msg%n"/>-->
         </Console>
-<!--   参考链接     https://stackoverflow.com/questions/35054870/how-do-i-conditionally-add-log4j2-appender-depending-on-java-system-property-->
-<!--   官方文档 Scripts https://logging.apache.org/log4j/2.x/manual/configuration.html-->
-<!--        https://logging.apache.org/log4j/2.x/manual/appenders.html#ScriptAppenderSelector-->
-        <ScriptAppenderSelector name="SelectIt">
-            <Script language="JavaScript"><![CDATA[
-        java.lang.System.getProperty("os.name").search("Windows") > -1 ? "Null" : "Socket";]]>
-            </Script>
-            <AppenderSet>
-                <Socket name="Socket" protocol="tcp" host="192.168.0.101" port="15000" immediateFail="true" immediateFlush="false"
-                        bufferedIO="false">
-                    <!--输出信息为ECS JSON格式-->
-                    <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json"/>
-                </Socket>
-                <Console name="Console" target="SYSTEM_OUT">
-                    <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z'} [%t] %level %logger - %msg%n"/>
-                </Console>
-                <Null name="Null" />
-            </AppenderSet>
-        </ScriptAppenderSelector>
+        <Console name="Console_test" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} [%t] %level %logger - %msg%n"/>
+        </Console>
     </Appenders>
     <Loggers>
         <Root level="info">
-            <AppenderRef ref="Console"/>
+<!-- ${name}语法，官方文档 https://logging.apache.org/log4j/2.x/manual/configuration.html#property-substitution-->
+            <AppenderRef ref="${Console}"/>
         </Root>
-        <Logger name="com.example.log4j2.controller" level="debug" additivity="false">
-            <AppenderRef ref="SelectIt"/>
-        </Logger>
     </Loggers>
 </Configuration>
