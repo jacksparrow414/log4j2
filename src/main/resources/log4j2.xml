@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="debug">
-    <Properties>
-        <Property name="Console">Console_${sys:log4jLayOut:-test}</Property>
-    </Properties>
+<!-- 官方文档   https://logging.apache.org/log4j/2.x/manual/configuration.html#Arbiters-->
     <Appenders>
-        <Console name="Console_prod" target="SYSTEM_OUT">
-            <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json"/>
-        </Console>
-        <Console name="Console_test" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} [%t] %level %logger - %msg%n"/>
-        </Console>
+        <SystemPropertyArbiter propertyName="env" propertyValue="test">
+            <Console name="Out" target="SYSTEM_OUT">
+                <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} [%t] %level %logger - %msg%n"/>
+            </Console>
+        </SystemPropertyArbiter>
+        <SystemPropertyArbiter propertyName="env" propertyValue="prod">
+            <Console name="Out" target="SYSTEM_OUT">
+                <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json"/>
+            </Console>
+        </SystemPropertyArbiter>
     </Appenders>
     <Loggers>
         <Root level="info">
-<!-- ${name}语法，官方文档 https://logging.apache.org/log4j/2.x/manual/configuration.html#property-substitution-->
-            <AppenderRef ref="${Console}"/>
+            <AppenderRef ref="Out"/>
         </Root>
     </Loggers>
 </Configuration>
