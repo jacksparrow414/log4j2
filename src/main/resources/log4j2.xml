@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="debug">
-<!-- 官方文档   https://logging.apache.org/log4j/2.x/manual/configuration.html#Arbiters-->
     <Appenders>
-        <SystemPropertyArbiter propertyName="env" propertyValue="test">
-            <Console name="Out" target="SYSTEM_OUT">
-                <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} [%t] %level %logger - %msg%n"/>
-            </Console>
-        </SystemPropertyArbiter>
-        <SystemPropertyArbiter propertyName="env" propertyValue="prod">
-            <Console name="Out" target="SYSTEM_OUT">
-                <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json"/>
-            </Console>
-        </SystemPropertyArbiter>
+        <ScriptAppenderSelector name="SelectIt">
+            <Script language="groovy" name="selectScripts"><![CDATA[
+                    var result;
+                    if (System.getProperty("os.name").equalsIgnoreCase("Windows")) {
+                        result = "Null";
+                    } else {
+                        result = "Console";
+                    }
+                    return result;
+            ]]>
+            </Script>
+            <AppenderSet>
+                <Socket name="Socket" protocol="tcp" host="192.168.0.101" port="15000" immediateFail="true" immediateFlush="false"
+                        bufferedIO="false">
+                    <!--输出信息为ECS JSON格式-->
+                    <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json"/>
+                </Socket>
+                <Console name="Console" target="SYSTEM_OUT">
+                    <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z'} [%t] %level %logger - %msg%n"/>
+                </Console>
+                <Null name="Null" />
+            </AppenderSet>
+        </ScriptAppenderSelector>
     </Appenders>
     <Loggers>
         <Root level="info">
-            <AppenderRef ref="Out"/>
+            <AppenderRef ref="SelectIt"/>
         </Root>
     </Loggers>
 </Configuration>
